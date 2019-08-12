@@ -8,7 +8,11 @@ If you would like to run this yourself:
 4. Run AI.py
 5. You can adjust the learning rate to see the changes in training accuracy.
 # Technical details of the Neural Network
-This is a feedforward dense neural network. It has one hidden layer with 32 neurons. All neurons use the sigmoid activation function. The loss function is logloss. I use batch gradient descent to update the weights.
+* This is a feedforward dense neural network.
+* It has one hidden layer with 32 neurons.
+* All neurons use the sigmoid activation function.
+* The loss function is logloss.
+* I use batch gradient descent to update the weights.
 # Is this a state of the art implementation with no flaws?
 No, Not at all. In fact, Here is a list of all the flaws:
 * I use batch gradient descent. This means I accumulate the gradient updates over the whole training set before preforming a single update. This won't scale well, This is why I am using the sample of MNIST and not the whole thing.
