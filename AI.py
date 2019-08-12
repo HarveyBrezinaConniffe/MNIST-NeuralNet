@@ -1,3 +1,4 @@
+# Written by Harvey Brezina Conniffe in August 2019
 # Import neccesary libraries
 import numpy as np
 from matplotlib.pyplot import imread
