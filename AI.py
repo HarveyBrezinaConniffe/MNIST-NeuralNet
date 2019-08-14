@@ -116,9 +116,9 @@ def forwardpropagation(inp):
 # Using the error of the output layer, Propagate the error back through the network by multiplying it by the weights of the layer before it to work out how "wrong" each unit in the hidden layer is. From this we work out the gradient updates, Which is the direction and magnitude by which we need to multiply each weight in order to minimize the cost function.
 # A lot of this function is derived from the cost function. While I do know the general mechanism of this and how to implement it. I do not have the neccesary calculus knowledge to prove the derivation myself.
 def backprop(fprop):
-    # Compute the error of the last layer.
+    # Compute the error of the final layer.
     delta2 = np.transpose(np.transpose(fprop[3])-labelsonehot)
-    # Propagate it back to the last layer.
+    # Propagate it back to the previous layer.
     delta1 = np.dot(np.transpose(weights1), delta2)
     # Remove the placeholder bias 1s as we don't want to update them.
     delta1 = np.delete(delta1, (0), axis=0)
@@ -131,7 +131,7 @@ def backprop(fprop):
     # Matrix multiply the weight updates by the activation values. 
     D1 = np.dot(delta1, fprop[4])
     D2 = np.dot(delta2, np.transpose(fprop[1]))
-    # Scale by 1/DATASET SIZE
+    # Scale by 1/DATASET SIZE to get the average gradient
     D1 *= 1/labels.size
     D2 *= 1/labels.size
     # Return gradients for optimization function.
