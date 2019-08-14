@@ -10,13 +10,12 @@ np.set_printoptions(threshold=sys.maxsize)
 
 # -- LOAD DATA -- 
 
-labels = np.empty([1, 0])
-images = np.empty([0, 28*28])
-
 loaded = 0
 
+labelsp = []
+imagesp = []
 # Loop through directory
-for x in os.walk("trainingSample"):
+for x in os.walk("trainingSet"):
     # Get the last character of the subdirectory, This is the class( A number from 0-9 )
     num = x[0][-1]
     # Ensure it is a number indicating class
@@ -26,15 +25,19 @@ for x in os.walk("trainingSample"):
         continue
     # Loop over images in directory
     for y in x[2]:
-        print("LOADED "+str(loaded))
+        if loaded%500 == 0:
+            print("LOADED "+str(loaded))
         # Append the label
-        labels = np.append(labels, num)
+        labelsp.append(num)
         # Read the image and flatten it
         img = imread(x[0]+"/"+y)
-        img = img.reshape([1, img.size])
+        img = img.reshape([img.size,])
         # Append the image to the overall array.
-        images = np.append(images, img, axis=0)
+        imagesp.append(img)
         loaded += 1
+
+labels = np.array(labelsp)
+images = np.array(imagesp)
 
 # Normalize the images by subtracting the mean and dividing by the standard deviation
 def normalize(arr):
