@@ -53,14 +53,30 @@ labelsonehot = np.zeros([labels.size, 10])
 for x in range(0, labels.size):
     labelsonehot[x][int(labels[x])] = 1
 
+# Split data into train and test sets
+
+# First we need to shuffle the data to ensure that the proportion of each class in the train and test sets are approximately equal
+
+# Get a list of random indices
+indices = np.random.permutation(labels.shape[0])
+# Construct a new list in the order of the random indices
+images = images[indices]
+labels = labels[indices]
+labelsonehot = labelsonehot[indices]
+
+[labelsOH_train, labelsOH_val] = np.split(labelsonehot, [int(labelsonehot.shape[0]*0.7)])
+[labels_train, labels_val] = np.split(labels, [int(labels.shape[0]*0.7)])
+[images_train, images_val] = np.split(images, [int(images.shape[0]*0.7)])
+print(labels_train.shape, images_train.shape, labels_val.shape, images_val.shape)
+
 # -- INITIALIZE NEURAL NETWORK --
 # Architecture is a fully connected network with 1 hidden layer containing 32 neurons
 
 # The extra weight is for the bias( It will be multiplied by 1 ). A bias allows us to 'shift' the center of the activation rather than just change its shape.
 # Weights for input to first hidden layer 0->1
-weights0 = np.random.random_sample([32, (28*28)+1])
+weights0 = np.random.random_sample([16, (28*28)+1])
 # Weights for first hidden layer to output 1->2
-weights1 = np.random.random_sample([10, 32+1])
+weights1 = np.random.random_sample([10, 16+1])
 
 # -- DEFINE FUNCTIONS FOR TRAINING --
 
@@ -84,19 +100,19 @@ def logloss(predictions):
     # Compute the loss as if they were all ment to be negative
     predictionsnegative = -np.log(1-predictions)
     # Remove the loss calculated for the positive cases where it was actually negative and vice versa
-    predictionspositive = predictionspositive*labelsonehot
-    predictionsnegative = predictionsnegative*(1-labelsonehot)
+    predictionspositive = predictionspositive*labelsOH_train
+    predictionsnegative = predictionsnegative*(1-labelsOH_train)
     # Add the two arrays together to get the loss for each prediction
     tloss = predictionspositive+predictionsnegative
     # Return the overall loss
     return np.sum(tloss)
 
 # Accuracy measure, This gives us a % accuracy of the neural network's predictions
-def accuracy(predictions):
+def accuracy(predictions, labelsin):
     c = np.argmax(predictions, axis=1)
     totalmatches = 0
     for i in range(0, len(c)):
-        if c[i] == labels[i]:
+        if c[i] == labelsin[i]:
             totalmatches += 1
     return totalmatches/len(c)
 
@@ -120,7 +136,7 @@ def forwardpropagation(inp):
 # A lot of this function is derived from the cost function. While I do know the general mechanism of this and how to implement it. I do not have the neccesary calculus knowledge to prove the derivation myself.
 def backprop(fprop):
     # Compute the error of the final layer.
-    delta2 = np.transpose(np.transpose(fprop[3])-labelsonehot)
+    delta2 = np.transpose(np.transpose(fprop[3])-labelsOH_train)
     # Propagate it back to the previous layer.
     delta1 = np.dot(np.transpose(weights1), delta2)
     # Remove the placeholder bias 1s as we don't want to update them.
@@ -145,16 +161,17 @@ def gradientDescent(iterations, learningrate):
     global weights0, weights1
     for i in range(0, iterations):
         # Compute the output of the neural network on the training set.
-        fprop = forwardpropagation(images)
+        fprop = forwardpropagation(images_train)
         # Run backpropagation on the output to work out the gradient updates.
         backp = backprop(fprop)
         # Update the weights. We multiply the updates by the learning rate to multiply how fast it learns. This will naturally slow as we get closer to the minimum as the gradients magnitudes get smaller.
         weights0 = weights0-(learningrate*backp[0])
         weights1 = weights1-(learningrate*backp[1])
         # Calculate the loss and accuracy on the training set.
-        acc = accuracy(np.transpose(fprop[3]))
+        acc = accuracy(np.transpose(fprop[3]), labels_train)
         loss = logloss(np.transpose(fprop[3]))
+        valacc = accuracy(np.transpose(forwardpropagation(images_val)[3]), labels_val)
         # Print information about training.
-        print("Iteration {}, Accuracy: {:.2f}%, Loss: {:.2f}".format(i, acc*100, loss))
+        print("Iteration {}, Accuracy: {:.2f}%, Loss: {:.2f}, Validation Accuracy: {:.2f}%".format(i, acc*100, loss, valacc*100))
 
-gradientDescent(5000, 3)
+gradientDescent(5000, 1)
