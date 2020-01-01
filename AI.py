@@ -132,8 +132,7 @@ def forwardpropagation(inp):
     a2 = sigmoid(l2)
     return [l1, a1, l2, a2, inp]
 
-# Using the error of the output layer, Propagate the error back through the network by multiplying it by the weights of the layer before it to work out how "wrong" each unit in the hidden layer is. From this we work out the gradient updates, Which is the direction and magnitude by which we need to multiply each weight in order to minimize the cost function.
-# A lot of this function is derived from the cost function. While I do know the general mechanism of this and how to implement it. I do not have the neccesary calculus knowledge to prove the derivation myself.
+# Calculate the gradient updates to each weight( What direction to adjust them to minimize the loss ).
 def backprop(fprop):
     # Compute the error of the final layer.
     delta2 = np.transpose(np.transpose(fprop[3])-labelsOH_train)
