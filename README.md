@@ -13,9 +13,8 @@ If you would like to run this yourself:
 * All neurons use the sigmoid activation function.
 * The loss function is logloss.
 * I use batch gradient descent to update the weights.
-# Is this a state of the art implementation with no flaws?
-No, Not at all. In fact, Here is a list of all the flaws:
-* It's probably wasteful to use MNIST as JPGs rather than their original format but I was more comfortable with it.
-* Sigmoid is probably not the best activation to use but it is nice and simple.
-* You would probably be better off using a convolutional neural network but this was mostly just for educational purposes so I went with a simpler structure.
-* I mostly arbitrarily chose the hyperparameters( No. of neurons in the hidden layer. No. hidden layers. Etc. )
+# TODO
+Some of the features I plan on implementing:
+* Add a different activation( Tanh next probably )
+* Add a better optimiser( Adam next probably )
+* Add some other fun stuff( Batchnorm and droput next )
